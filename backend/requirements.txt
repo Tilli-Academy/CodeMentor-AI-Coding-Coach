@@ -1,0 +1,14 @@
+# CodeMentor backend dependencies.
+# Versions are intentionally unpinned for now; we can lock them with
+# `pip freeze > requirements.txt` after the first successful install.
+#
+# Install (inside a virtual environment):
+#     pip install -r requirements.txt
+
+fastapi            # web framework: defines the API, validation, and /docs
+uvicorn[standard]  # ASGI server that actually runs the FastAPI app
+python-dotenv      # loads environment variables from .env (e.g. OLLAMA_HOST)
+httpx              # HTTP client used by app/services/llm.py to call Ollama
+
+# AI runs locally via Ollama (http://127.0.0.1:11434) — no SDK or API key needed.
+# Note: SQLite uses Python's built-in `sqlite3` module — no dependency needed.

@@ -1,0 +1,23 @@
+# ── Python (backend) ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# ── Environment / secrets ─────────────────────────────────────
+.env
+
+# ── SQLite database files ─────────────────────────────────────
+*.db
+*.sqlite3
+
+# ── Node (archived SvelteKit frontend) ────────────────────────
+node_modules/
+.svelte-kit/
+
+# ── OS / editor ───────────────────────────────────────────────
+.DS_Store
+
+# ── Vendored Monaco editor (fetch via frontend/vendor/monaco/README.md) ──
+frontend/vendor/monaco/vs/
