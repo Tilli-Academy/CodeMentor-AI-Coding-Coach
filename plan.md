@@ -99,12 +99,26 @@ using the stdlib `sqlite3` module — no ORM, no new dependency.
   aria-live="polite"` so loading/errors are announced; a "Skip to content" link
   lets keyboard users bypass the nav.
 
-## Phase 6 — Quality & hardening ⬜
+## Phase 6 — Quality & hardening ✅
 
-- ⬜ Automated tests: `pytest` + FastAPI `TestClient` for routes, validation (422),
-  and service error mapping (503/502).
-- ⬜ Basic rate limiting / input-size guards on AI endpoints.
-- ⬜ First Git commit and a documented local run/setup flow.
+- ✅ Automated tests: `pytest` + FastAPI `TestClient` (34 tests) covering `/health`,
+  input validation (422), the AI success paths with `app.services.llm` monkeypatched
+  (no Ollama needed), the `LLMConfigError`→503 / `LLMError`→502 mapping, and the
+  history read/delete round-trip. Tests run offline against a temp SQLite DB (never
+  `codementor.db`). Layout: `backend/conftest.py` (shared `client` fixture),
+  `backend/tests/`, `backend/pytest.ini`, `backend/requirements-dev.txt` (`pytest`).
+  Run with `pytest` from `backend/`.
+- ✅ Input-size guards: every AI request field is length-capped in the Pydantic
+  schemas (`code` ≤ 20000; `question`/`error`/`answer` ≤ 5000; `topic` ≤ 500) →
+  over-length input returns 422.
+- ✅ Rate limiting: a lightweight in-memory, per-client sliding-window limiter
+  (`services/rate_limit.py`, no new dependency) applied router-wide to `/api/ai/*`;
+  returns 429 + `Retry-After` when exceeded. Configurable via
+  `RATE_LIMIT_MAX_REQUESTS` (default 30) / `RATE_LIMIT_WINDOW_SECONDS` (default 60);
+  set max to 0 to disable. History/health are unaffected.
+- ✅ First Git commit made and pushed to `origin/main`
+  (github.com/SaiManish3/CodeMentor-AI-Coding-Coach); local run/setup flow documented
+  in `CLAUDE.md` (backend, Ollama, frontend, and tests).
 
 ## Backlog / ideas ⬜
 

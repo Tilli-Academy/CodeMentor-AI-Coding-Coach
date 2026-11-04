@@ -1,0 +1,7 @@
+# CodeMentor backend — development/test dependencies (not needed to run the app).
+#
+# Install (inside the same virtual environment as requirements.txt):
+#     pip install -r requirements-dev.txt
+
+pytest   # test runner. FastAPI's TestClient drives the API in-process using
+         # httpx, which is already a runtime dependency (see requirements.txt).

@@ -9,9 +9,10 @@ Responsibility:
 """
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.database import history as history_repo
+from app.services.rate_limit import rate_limit
 from app.schemas.ai import (
     ExplainRequest,
     ExplainResponse,
@@ -24,7 +25,9 @@ from app.schemas.ai import (
 )
 from app.services import llm
 
-router = APIRouter(prefix="/api/ai", tags=["ai"])
+# Every AI endpoint is rate-limited (the model calls are expensive); the limiter
+# runs as a router-wide dependency before any handler body.
+router = APIRouter(prefix="/api/ai", tags=["ai"], dependencies=[Depends(rate_limit)])
 
 logger = logging.getLogger("codementor.history")
 

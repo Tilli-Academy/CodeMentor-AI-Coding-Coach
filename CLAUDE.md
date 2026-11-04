@@ -86,10 +86,17 @@ is `~/.local/bin/ollama`. No API key is involved.
 **Frontend** (from `frontend/`): open `index.html` directly, or serve it with a
 static server, e.g. `python3 -m http.server 5500`.
 
-No automated test suite is configured. To smoke-test the API without a running
-server, drive the app in-process with FastAPI's `TestClient` (e.g.
-`TestClient(app).post("/api/ai/hints", json={...})`) — useful for checking
-validation (422). AI calls require Ollama running; if it is down, endpoints
+**Tests** (from `backend/`, inside the virtual environment):
+
+```bash
+pip install -r requirements-dev.txt   # once, installs pytest
+pytest                                # 34 tests, runs fully offline
+```
+
+The suite (`backend/tests/`, config in `pytest.ini`) uses FastAPI's `TestClient`.
+It needs no running server and no Ollama: the `client` fixture in `conftest.py`
+points the DB at a temp file, and the AI route tests monkeypatch `app.services.llm`.
+Against a live server, AI calls require Ollama running; if it is down, endpoints
 return **503**.
 
 ## Environment Constraints
@@ -177,7 +184,19 @@ The project owner is learning this technology stack while building the project. 
   roving `tabindex`, and support Arrow/Home/End keyboard navigation (`focusTab` in
   `app.js`). Status regions are `role="status" aria-live="polite"` (loading/errors are
   announced), and a "Skip to content" link lets keyboard users bypass the nav.
-- ⬜ No automated test suite configured.
+- ✅ Automated test suite (`pytest` + FastAPI `TestClient`, 37 tests in `backend/tests/`):
+  `/health`, 422 validation, AI success + `LLMConfigError`→503 / `LLMError`→502 mapping
+  (the `llm` service is monkeypatched, so no Ollama is needed), rate-limit 429s, and the
+  history read/delete round-trip. A `client` fixture (`backend/conftest.py`) redirects the
+  DB to a temp file, so tests never touch `codementor.db`. Dev deps in
+  `backend/requirements-dev.txt`; config in `backend/pytest.ini`. Run `pytest` from `backend/`.
+- ✅ Rate limiting + input-size guards on the AI endpoints. Input fields are length-capped
+  in the Pydantic schemas (over-length → 422). A dependency-free in-memory, per-client
+  sliding-window limiter (`app/services/rate_limit.py`) is applied router-wide to
+  `/api/ai/*` and returns **429** with a `Retry-After` header when exceeded; tunable via
+  `RATE_LIMIT_MAX_REQUESTS` (default 30) / `RATE_LIMIT_WINDOW_SECONDS` (default 60),
+  or disabled with max=0. `/health` and `/api/history` are not limited.
+- ✅ First commit pushed to `origin/main` (github.com/SaiManish3/CodeMentor-AI-Coding-Coach).
 
 See `plan.md` for the phased roadmap.
 
