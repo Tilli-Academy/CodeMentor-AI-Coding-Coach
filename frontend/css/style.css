@@ -1,0 +1,596 @@
+/* CodeMentor styles — modern AI coding-tutor UI. */
+
+:root {
+	--bg: #0b1120;
+	--surface: #0f172a;
+	--panel: #1e293b;
+	--panel-2: #0b1222; /* code / pre background */
+	--border: #334155;
+	--border-soft: #24324a;
+	--fg: #e2e8f0;
+	--muted: #94a3b8;
+	--accent: #38bdf8;
+	--accent-ink: #082f49;
+	--error: #f87171;
+	--ok: #4ade80;
+
+	--radius: 10px;
+	--radius-sm: 6px;
+	--shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+	--nav-h: 56px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+	background: var(--bg);
+	color: var(--fg);
+	line-height: 1.55;
+	font-size: 15px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	line-height: 1.25;
+}
+
+/* ─────────────────────────── Skip link ─────────────────────────── */
+
+/* Visually hidden until focused, then it slides into view at the top-left so a
+   keyboard user can jump past the nav straight to the main content. */
+.skip-link {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	transform: translateY(-120%);
+	margin: 0.5rem;
+	padding: 0.55rem 1.3rem;
+	background: var(--accent);
+	color: var(--accent-ink);
+	font-weight: 700;
+	border-radius: var(--radius-sm);
+	text-decoration: none;
+	transition: transform 0.15s;
+}
+
+.skip-link:focus {
+	transform: translateY(0);
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* The main region is a skip-link target; suppress its focus ring (it is a
+   scroll destination, not an interactive control). */
+#app:focus {
+	outline: none;
+}
+
+/* ─────────────────────────── Top navigation ─────────────────────────── */
+
+.topnav {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	height: var(--nav-h);
+	padding: 0 1.25rem;
+	background: rgba(15, 23, 42, 0.9);
+	backdrop-filter: blur(8px);
+	border-bottom: 1px solid var(--border);
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 0.55rem;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+}
+
+.brand-mark {
+	display: inline-grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--radius-sm);
+	background: var(--accent);
+	color: var(--accent-ink);
+	font-family: ui-monospace, Menlo, Consolas, monospace;
+	font-size: 0.8rem;
+	font-weight: 800;
+}
+
+.brand-name {
+	font-size: 1.05rem;
+}
+
+.nav-tabs {
+	display: flex;
+	gap: 0.25rem;
+	overflow-x: auto;
+}
+
+.nav-tab {
+	margin: 0;
+	padding: 0.45rem 0.9rem;
+	background: transparent;
+	color: var(--muted);
+	border: none;
+	border-radius: var(--radius-sm);
+	font: inherit;
+	font-weight: 600;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s;
+}
+
+.nav-tab:hover {
+	color: var(--fg);
+	background: rgba(148, 163, 184, 0.1);
+}
+
+.nav-tab.active {
+	color: var(--accent);
+	background: rgba(56, 189, 248, 0.12);
+}
+
+/* ─────────────────────────── Layout ─────────────────────────── */
+
+#app {
+	max-width: 1120px;
+	margin: 0 auto;
+	padding: 1.5rem 1.25rem 3rem;
+}
+
+.workspace-layout {
+	display: grid;
+	grid-template-columns: minmax(300px, 380px) 1fr;
+	gap: 1.25rem;
+	align-items: start;
+}
+
+/* History uses no code, so give the panel the full width. */
+#app.history-active {
+	grid-template-columns: 1fr;
+}
+
+#app.history-active #workspace {
+	display: none;
+}
+
+.card {
+	background: var(--panel);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius);
+	padding: 1.25rem;
+	box-shadow: var(--shadow);
+}
+
+.workspace {
+	position: sticky;
+	top: calc(var(--nav-h) + 1rem);
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+#panels {
+	min-width: 0; /* let children (code blocks, pre) shrink instead of overflowing */
+}
+
+.panel {
+	display: none;
+}
+
+.panel.active {
+	display: block;
+}
+
+.panel-head {
+	margin-bottom: 1rem;
+}
+
+.panel-head h2 {
+	margin: 0 0 0.25rem;
+}
+
+.panel-sub {
+	margin: 0;
+	color: var(--muted);
+	font-size: 0.9rem;
+}
+
+/* ─────────────────────────── Forms & inputs ─────────────────────────── */
+
+form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+label {
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+
+.optional {
+	font-weight: 400;
+	color: var(--muted);
+}
+
+textarea,
+input[type="text"] {
+	width: 100%;
+	background: var(--panel-2);
+	color: var(--fg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.65rem 0.7rem;
+	font-size: 0.9rem;
+	resize: vertical;
+}
+
+input[type="text"] {
+	resize: none;
+}
+
+textarea {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+#code {
+	min-height: 320px;
+	flex: 1;
+}
+
+/* Monaco editor host. Hidden until editor.js successfully mounts Monaco; until
+   then (or if Monaco fails to load) the #code textarea is shown as the fallback. */
+.monaco-host {
+	display: none;
+	height: 440px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+}
+
+.workspace.monaco-ready #code {
+	display: none;
+}
+
+.workspace.monaco-ready .monaco-host {
+	display: block;
+}
+
+textarea:focus,
+input[type="text"]:focus {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+/* ─────────────────────────── Buttons ─────────────────────────── */
+
+button {
+	margin-top: 0.75rem;
+	align-self: flex-start;
+	background: var(--accent);
+	color: var(--accent-ink);
+	font: inherit;
+	font-weight: 700;
+	border: none;
+	border-radius: var(--radius-sm);
+	padding: 0.55rem 1.3rem;
+	cursor: pointer;
+	transition: filter 0.15s, opacity 0.15s;
+}
+
+button:hover:not(:disabled) {
+	filter: brightness(1.08);
+}
+
+button:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+button:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+/* Secondary (outline) buttons for lower-emphasis actions. */
+#next-hint-btn,
+#learn-new-btn,
+#history-refresh-btn,
+#history-detail-close,
+.history-item-actions button {
+	background: transparent;
+	color: var(--accent);
+	border: 1px solid var(--accent);
+}
+
+/* ─────────────────────────── Status & result ─────────────────────────── */
+
+.status {
+	margin-top: 1rem;
+	padding: 0.6rem 0.9rem;
+	border-radius: var(--radius-sm);
+	background: var(--panel-2);
+	border: 1px solid var(--border-soft);
+}
+
+.status.loading {
+	color: var(--accent);
+}
+
+.status.error {
+	color: var(--error);
+	border-color: var(--error);
+}
+
+.result {
+	margin-top: 1.25rem;
+	background: var(--panel-2);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius);
+	padding: 1rem 1.15rem;
+}
+
+.result h3 {
+	margin-top: 0;
+}
+
+/* ─────────────────────────── Progressive Hints ─────────────────────────── */
+
+.hint-actions,
+.learn-actions {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+
+.hint-done {
+	color: var(--muted);
+	margin-top: 0.75rem;
+}
+
+/* ─────────────────────────── Learning Mode ─────────────────────────── */
+
+.followup-label {
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+#learn-followup-wrap {
+	margin-top: 1rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--border-soft);
+}
+
+.verdict-correct {
+	color: var(--ok);
+}
+
+.verdict-partial {
+	color: var(--accent);
+}
+
+.verdict-incorrect {
+	color: var(--error);
+}
+
+/* ─────────────────────────── History ─────────────────────────── */
+
+.history-header,
+.history-detail-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.history-header h2 {
+	margin: 0;
+}
+
+#history-refresh-btn,
+.history-detail-head button,
+.history-item-actions button {
+	margin-top: 0;
+	padding: 0.35rem 0.8rem;
+	font-size: 0.85rem;
+}
+
+.history-list {
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.history-item {
+	background: var(--panel-2);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius);
+	padding: 0.8rem 0.95rem;
+	transition: border-color 0.15s;
+}
+
+.history-item:hover {
+	border-color: var(--border);
+}
+
+.history-meta {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.history-type {
+	font-weight: 700;
+	color: var(--accent);
+}
+
+.history-time {
+	color: var(--muted);
+	font-size: 0.85rem;
+}
+
+.history-preview {
+	margin: 0.4rem 0 0.6rem;
+	color: var(--muted);
+}
+
+.history-item-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.history-delete-btn {
+	background: transparent;
+	color: var(--error);
+	border: 1px solid var(--error);
+}
+
+.history-field {
+	margin-top: 0.9rem;
+}
+
+.history-field h4 {
+	margin: 0 0 0.3rem;
+	color: var(--muted);
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.history-field-value {
+	white-space: pre-wrap;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.6rem;
+}
+
+.history-field-value.markdown {
+	white-space: normal;
+}
+
+/* ─────────────────────────── Markdown rendering ─────────────────────────── */
+
+.markdown > :first-child {
+	margin-top: 0;
+}
+
+.markdown > :last-child {
+	margin-bottom: 0;
+}
+
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+	margin: 1rem 0 0.4rem;
+	font-size: 1rem;
+	color: var(--fg);
+}
+
+.markdown p {
+	margin: 0.6rem 0;
+}
+
+.markdown ul,
+.markdown ol {
+	margin: 0.6rem 0;
+	padding-left: 1.4rem;
+}
+
+.markdown li {
+	margin: 0.2rem 0;
+}
+
+.markdown code {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 0.05rem 0.3rem;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.85em;
+}
+
+.markdown pre {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 0.7rem 0.8rem;
+	overflow-x: auto;
+}
+
+.markdown pre code {
+	background: none;
+	border: none;
+	padding: 0;
+	font-size: 0.85rem;
+}
+
+/* ─────────────────────────── Responsive ─────────────────────────── */
+
+@media (max-width: 860px) {
+	.workspace-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.workspace {
+		position: static;
+	}
+
+	#code {
+		min-height: 200px;
+	}
+
+	.monaco-host {
+		height: 300px;
+	}
+
+	.topnav {
+		padding: 0 0.9rem;
+	}
+}
+
+@media (max-width: 520px) {
+	#app {
+		padding: 1rem 0.9rem 2.5rem;
+	}
+
+	.card {
+		padding: 1rem;
+	}
+
+	button {
+		width: 100%;
+		text-align: center;
+	}
+
+	/* Keep inline row-action buttons compact rather than full width. */
+	.history-item-actions button,
+	.history-detail-head button,
+	.hint-actions button,
+	.learn-actions button {
+		width: auto;
+	}
+}

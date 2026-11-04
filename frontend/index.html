@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>CodeMentor</title>
+		<link rel="icon" href="assets/favicon.svg" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body>
+		<!-- Keyboard users can jump straight to the main content, past the nav. -->
+		<a href="#app" class="skip-link">Skip to content</a>
+
+		<!-- Top navigation: switches feature panels without reloading the page. -->
+		<nav class="topnav">
+			<div class="brand">
+				<span class="brand-mark">&lt;/&gt;</span>
+				<span class="brand-name">CodeMentor</span>
+			</div>
+			<div class="nav-tabs" role="tablist" aria-label="Features">
+				<button type="button" class="nav-tab active" data-tab="explain" id="tab-explain" role="tab" aria-selected="true" aria-controls="panel-explain" tabindex="0">Explain</button>
+				<button type="button" class="nav-tab" data-tab="hints" id="tab-hints" role="tab" aria-selected="false" aria-controls="panel-hints" tabindex="-1">Hints</button>
+				<button type="button" class="nav-tab" data-tab="learn" id="tab-learn" role="tab" aria-selected="false" aria-controls="panel-learn" tabindex="-1">Learning Mode</button>
+				<button type="button" class="nav-tab" data-tab="history" id="tab-history" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1">History</button>
+			</div>
+		</nav>
+
+		<main id="app" class="workspace-layout" tabindex="-1">
+			<!-- Shared code workspace (left column). Used by Explain, Hints and
+			     Learning Mode; hidden on the History tab. -->
+			<aside id="workspace" class="workspace card">
+				<label for="code">Your code</label>
+				<!-- Monaco mounts here; #code textarea is the fallback + value source. -->
+				<div id="monaco-editor" class="monaco-host"></div>
+				<textarea id="code" name="code" rows="16" placeholder="Paste your code here..."></textarea>
+			</aside>
+
+			<!-- Feature panels (right column). Only the active one is shown. -->
+			<div id="panels">
+				<!-- Explain -->
+				<section class="panel active card" data-panel="explain" id="panel-explain" role="tabpanel" aria-labelledby="tab-explain" tabindex="0">
+					<header class="panel-head">
+						<h2>Explain</h2>
+						<p class="panel-sub">Get a beginner-friendly explanation of your code — or a focused diagnosis if you paste an error.</p>
+					</header>
+
+					<form id="explain-form">
+						<label for="error">Error message <span class="optional">(optional)</span></label>
+						<textarea id="error" name="error" rows="3" placeholder="Paste the error you saw, if any..."></textarea>
+						<button type="submit" id="submit-btn">Explain</button>
+					</form>
+
+					<section id="status" class="status" role="status" aria-live="polite" hidden></section>
+
+					<section id="result" class="result" hidden>
+						<h3>Explanation</h3>
+						<div id="explanation"></div>
+					</section>
+				</section>
+
+				<!-- Progressive Hints -->
+				<section class="panel card" data-panel="hints" id="panel-hints" role="tabpanel" aria-labelledby="tab-hints" tabindex="0">
+					<header class="panel-head">
+						<h2>Hints</h2>
+						<p class="panel-sub">Stuck? Get progressive hints about your code — guidance, not the full answer.</p>
+					</header>
+
+					<label for="question">What are you trying to do, or what's confusing?</label>
+					<textarea id="question" name="question" rows="3" placeholder="Describe what you'd like a hint about..."></textarea>
+
+					<div class="hint-actions">
+						<button type="button" id="hint-btn">Get Hint</button>
+						<button type="button" id="next-hint-btn" hidden>Next Hint</button>
+					</div>
+
+					<section id="hint-status" class="status" role="status" aria-live="polite" hidden></section>
+
+					<section id="hint-result" class="result" hidden>
+						<h3>Hint <span id="hint-level"></span> of 3</h3>
+						<div id="hint-content"></div>
+					</section>
+
+					<p id="hint-done" class="hint-done" hidden>That's all 3 hints — try applying them to your code!</p>
+				</section>
+
+				<!-- Learning Mode -->
+				<section class="panel card" data-panel="learn" id="panel-learn" role="tabpanel" aria-labelledby="tab-learn" tabindex="0">
+					<header class="panel-head">
+						<h2>Learning Mode</h2>
+						<p class="panel-sub">Check your understanding: answer a question about your code (or a topic) and get feedback.</p>
+					</header>
+
+					<label for="learn-topic">Topic <span class="optional">(optional — uses your code if left blank)</span></label>
+					<input type="text" id="learn-topic" name="learn-topic" placeholder="e.g. for loops, recursion, list slicing" />
+
+					<div class="learn-actions">
+						<button type="button" id="learn-question-btn">Get a Question</button>
+					</div>
+
+					<section id="learn-status" class="status" role="status" aria-live="polite" hidden></section>
+
+					<section id="learn-qa" class="result" hidden>
+						<h3>Question</h3>
+						<div id="learn-question"></div>
+
+						<label for="learn-answer">Your answer</label>
+						<textarea id="learn-answer" name="learn-answer" rows="3" placeholder="Type your answer..."></textarea>
+
+						<div class="learn-actions">
+							<button type="button" id="learn-answer-btn">Submit Answer</button>
+						</div>
+					</section>
+
+					<section id="learn-feedback" class="result" hidden>
+						<h3>Feedback — <span id="learn-verdict"></span></h3>
+						<div id="learn-feedback-text"></div>
+
+						<div id="learn-followup-wrap" hidden>
+							<p class="followup-label">Follow-up question:</p>
+							<div id="learn-followup"></div>
+							<div class="learn-actions">
+								<button type="button" id="learn-followup-btn">Answer this follow-up</button>
+							</div>
+						</div>
+
+						<div class="learn-actions">
+							<button type="button" id="learn-new-btn">New Question</button>
+						</div>
+					</section>
+				</section>
+
+				<!-- History -->
+				<section class="panel card" data-panel="history" id="panel-history" role="tabpanel" aria-labelledby="tab-history" tabindex="0">
+					<div class="history-header">
+						<h2>History</h2>
+						<button type="button" id="history-refresh-btn">Refresh</button>
+					</div>
+
+					<section id="history-status" class="status" role="status" aria-live="polite" hidden></section>
+
+					<ul id="history-list" class="history-list"></ul>
+
+					<section id="history-detail" class="result" hidden>
+						<div class="history-detail-head">
+							<h3 id="history-detail-title"></h3>
+							<button type="button" id="history-detail-close">Close</button>
+						</div>
+						<div id="history-detail-body"></div>
+					</section>
+				</section>
+			</div>
+		</main>
+
+		<!-- Monaco editor (vendored, self-contained). loader.js must precede editor.js.
+		     app.js is independent of Monaco and works with the textarea fallback. -->
+		<script src="vendor/monaco/vs/loader.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/editor.js"></script>
+	</body>
+</html>
